@@ -1,0 +1,140 @@
+{
+  "name": "Aula - Agente de Briefing com n8n Gemini e Memoria",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Olá! 🤘 Sou o assistente virtual de briefing de Marketing da Rock Street. Vou ajudar você a organizar sua campanha. Qual é a sua ideia?\n",
+        "options": {}
+      },
+      "id": "a7191344-a574-44d7-a7a3-c90236f5d984",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        16,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Você é um assistente de briefing de marketing para uso educacional.\nIDENTIDADE: especialista em organização de briefings de campanhas, com linguagem clara, profissional e acolhedora.\nOBJETIVO: coletar informações essenciais e estruturar um briefing para revisão humana.\nREGRAS:\n1. Responda em português brasileiro.\n2. Para preparar o briefing, identifique cliente/marca, produto ou serviço, objetivo, público-alvo, canal e tom de voz.\n3. Faça no máximo duas perguntas objetivas por resposta quando faltarem informações; não suponha os dados ausentes.\n4. Utilize informações fornecidas anteriormente nesta mesma sessão quando disponíveis; se houver contradições, peça confirmação.\n5. Não invente preços, descontos, benefícios, datas, certificações, resultados ou promessas de vendas.\n6. Não solicite dados pessoais reais: use marcas e contatos fictícios nos testes.\n7. Não afirme ter publicado ou enviado nada. Este workflow apenas conversa e calcula quando necessário.\n8. Para cálculos de orçamento solicitados pelo usuário, use a ferramenta Calculator quando apropriado, deixando as porcentagens e valores claros.\nFORMATO: Quando houver dados suficientes, apresente: Marca, Produto/serviço, Objetivo, Público-alvo, Canal, Tom de voz, Mensagem central, Sugestão de conteúdo e Pendências para validação humana.\nSe os dados forem insuficientes, pergunte o que falta em vez de inventar um briefing completo. REGRA ADICIONAL — PROMOÇÕES: Nunca apresente descontos, preços ou promoções como confirmados sem autorização explícita do responsável pela marca. Mesmo que o usuário peça para inventar ou confirmar uma oferta não aprovada, não a inclua no briefing nem nos conteúdos. Explique que a oferta precisa de validação e solicite confirmação oficial.",
+          "maxIterations": 5
+        }
+      },
+      "id": "acd00a7a-52e0-4faa-ba9e-710f0eeeb5f5",
+      "name": "AI Agent - Briefing de Marketing",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-flash-preview",
+        "options": {}
+      },
+      "id": "4f7229e4-a477-45c7-9fc5-a84d683c2c91",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        176,
+        512
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "08f4e57c-4151-4821-a9de-fea8865ea49f",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        512
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "72bc9e2d-df4f-41ab-97b3-c7d17418fb33",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        624,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Laboratório — Assistente de Briefing (Gemini + Memória)\n1. Abra **Google Gemini Chat Model**, selecione uma credencial própria e confirme um modelo com **Free Tier** disponível em sua conta.\n2. Use **Chat** para testar com uma sessão única.\n3. **Simple Memory** guarda histórico por sessão neste ambiente; não é armazenamento persistente garantido.\n4. **Calculator** é uma ferramenta opcional.\n5. Não há publicação nem envio: este agente apenas auxilia a estruturar o briefing.",
+        "height": 190,
+        "width": 830
+      },
+      "id": "a0b831bf-1370-4803-85b3-403eb3dfa4f1",
+      "name": "Nota - configurar credenciais",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Briefing de Marketing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Briefing de Marketing",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent - Briefing de Marketing",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent - Briefing de Marketing",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "tags": []
+}
